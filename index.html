@@ -141,9 +141,10 @@
         
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
+            width: 100%;
         }
         
         .metric-card {
@@ -153,12 +154,18 @@
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-width: 0;
+            overflow: hidden;
+            max-width: 100%;
         }
         
         .metric-value {
-            font-size: clamp(1.3rem, 3vw, 2em);
+            font-size: clamp(1.1rem, 2.5vw, 1.8em);
             font-weight: bold;
             margin-bottom: 5px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
         }
         
         .metric-label {
@@ -236,11 +243,19 @@
             
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                gap: 12px;
             }
             
             .metric-card {
-                padding: 15px;
+                padding: 15px 10px;
+            }
+            
+            .metric-value {
+                font-size: clamp(1rem, 2.2vw, 1.5em);
+            }
+            
+            .metric-label {
+                font-size: clamp(0.7rem, 1.8vw, 0.85em);
             }
             
             .header {
@@ -252,6 +267,19 @@
         @media (max-width: 480px) {
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .metric-card {
+                padding: 12px 8px;
+            }
+            
+            .metric-value {
+                font-size: clamp(0.9rem, 2vw, 1.3em);
+            }
+            
+            .metric-label {
+                font-size: clamp(0.65rem, 1.6vw, 0.8em);
             }
             
             .control-input {
@@ -261,6 +289,31 @@
             
             .chart-container {
                 padding: 12px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .metric-card {
+                padding: 10px 6px;
+            }
+            
+            .metric-value {
+                font-size: 0.85rem;
+                line-height: 1.2;
+            }
+            
+            .metric-label {
+                font-size: 0.65rem;
+                line-height: 1.2;
+            }
+            
+            .container {
+                padding: 15px;
             }
         }
         
