@@ -35,8 +35,8 @@ IcePicks is a professional NHL betting analysis tool that provides comprehensive
 
 1. Open `index.html` in your web browser
 2. Adjust the following parameters:
-   - **Daily Unit Size**: Set your preferred percentage of bankroll to risk per unit (slider from 0.5% to 10%)
-   - **Starting Bankroll**: Enter your initial bankroll amount (default: $20,000)
+   - **Daily Unit Size**: Set your preferred percentage of bankroll to risk per unit (slider from 0.5% to 10%, default: 3.5%)
+   - **Starting Bankroll**: Enter your initial bankroll amount (default: $1,000)
    - **Season**: Select which season(s) to analyze:
      - 2024 Season
      - 2023 Season
