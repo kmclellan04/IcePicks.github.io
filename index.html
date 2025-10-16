@@ -190,6 +190,12 @@
             flex: 1;
         }
         
+        .chart-container.full-width {
+            width: 100%;
+            margin-bottom: 30px;
+            min-width: unset;
+        }
+        
         .chart-container h3 {
             margin: 0 0 15px 0;
             color: #2c3e50;
@@ -234,11 +240,16 @@
             
             .charts-container {
                 gap: 20px;
+                flex-direction: column;
             }
             
             .chart-container {
                 min-width: 350px;
                 padding: 15px;
+            }
+            
+            .chart-container.full-width {
+                min-width: unset;
             }
             
             .metrics-grid {
@@ -379,23 +390,24 @@
             <!-- Metrics will be populated by JavaScript -->
         </div>
 
+        <div class="chart-container full-width">
+            <h3>Bankroll Growth Over Time</h3>
+            <canvas id="bankrollChart"></canvas>
+        </div>
+
         <div class="charts-container">
-            <div class="chart-container">
-                <h3>Bankroll Growth Over Time</h3>
-                <canvas id="bankrollChart"></canvas>
-            </div>
             <div class="chart-container">
                 <h3>Daily Profit Distribution</h3>
                 <canvas id="profitChart"></canvas>
             </div>
-        </div>
-
-        <div class="chart-container">
-            <h3>Monthly Performance Breakdown</h3>
-            <canvas id="monthlyChart"></canvas>
+            <div class="chart-container">
+                <h3>Monthly Performance Breakdown</h3>
+                <canvas id="monthlyChart"></canvas>
+            </div>
         </div>
     </div>
 
+    <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
