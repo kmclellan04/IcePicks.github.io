@@ -1,9 +1,24 @@
 let bankrollChart, profitChart, monthlyChart;
 let currentSeasonData = null;
 
+// Convert decimal odds to American odds
+function decimalToAmericanOdds(decimalOdds) {
+    if (decimalOdds >= 2.00) {
+        return (decimalOdds - 1) * 100;
+    } else {
+        return -100 / (decimalOdds - 1);
+    }
+}
+
 // Initialize charts
 function initializeCharts() {
     const ctx1 = document.getElementById('bankrollChart').getContext('2d');
+    
+    // Create gradient for bankroll chart
+    const gradientBankroll = ctx1.createLinearGradient(0, 0, 0, 400);
+    gradientBankroll.addColorStop(0, 'rgba(76, 175, 80, 0.4)');
+    gradientBankroll.addColorStop(1, 'rgba(76, 175, 80, 0.05)');
+    
     bankrollChart = new Chart(ctx1, {
         type: 'line',
         data: {
@@ -12,20 +27,51 @@ function initializeCharts() {
                 label: 'Bankroll',
                 data: [],
                 borderColor: '#4CAF50',
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                tension: 0.1,
-                fill: true
+                backgroundColor: gradientBankroll,
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#4CAF50',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        color: '#666'
+                    }
+                },
                 y: {
                     beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
+                    },
                     ticks: {
                         callback: function(value) {
                             return '$' + value.toLocaleString();
-                        }
+                        },
+                        font: {
+                            size: 11
+                        },
+                        color: '#666',
+                        padding: 10
                     }
                 }
             },
@@ -34,6 +80,17 @@ function initializeCharts() {
                     display: false
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 13,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    cornerRadius: 8,
+                    displayColors: false,
                     callbacks: {
                         label: function(context) {
                             return 'Bankroll: $' + context.parsed.y.toLocaleString();
@@ -49,31 +106,142 @@ function initializeCharts() {
         type: 'bar',
         data: {
             labels: [],
-            datasets: [{
-                label: 'Daily Profit',
-                data: [],
-                backgroundColor: []
-            }]
+            datasets: [
+                {
+                    label: 'Win Rate (%)',
+                    data: [],
+                    backgroundColor: [],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    yAxisID: 'y',
+                    order: 1
+                },
+                {
+                    label: 'Profit ($)',
+                    data: [],
+                    backgroundColor: [],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    yAxisID: 'y1',
+                    order: 2
+                }
+            ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        color: '#333'
+                    }
+                },
                 y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
+                    },
                     ticks: {
                         callback: function(value) {
-                            return '$' + value.toLocaleString();
-                        }
+                            return value + '%';
+                        },
+                        font: {
+                            size: 11
+                        },
+                        color: '#666',
+                        padding: 10
+                    },
+                    title: {
+                        display: true,
+                        text: 'Win Rate',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#666'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + (value / 1000).toFixed(1) + 'k';
+                        },
+                        font: {
+                            size: 11
+                        },
+                        color: '#666',
+                        padding: 10
+                    },
+                    title: {
+                        display: true,
+                        text: 'Profit',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#666'
                     }
                 }
             },
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 13,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    cornerRadius: 8,
+                    displayColors: true,
                     callbacks: {
                         label: function(context) {
-                            return 'Profit: $' + context.parsed.y.toLocaleString();
+                            const label = context.dataset.label || '';
+                            if (label.includes('Win Rate')) {
+                                return label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            } else {
+                                return label + ': $' + context.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 0});
+                            }
+                        },
+                        afterLabel: function(context) {
+                            return '';
                         }
                     }
                 }
@@ -89,17 +257,40 @@ function initializeCharts() {
             datasets: [{
                 label: 'Monthly Profit',
                 data: [],
-                backgroundColor: []
+                backgroundColor: [],
+                borderRadius: 8,
+                borderSkipped: false
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        color: '#666'
+                    }
+                },
                 y: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
+                    },
                     ticks: {
                         callback: function(value) {
                             return '$' + value.toLocaleString();
-                        }
+                        },
+                        font: {
+                            size: 11
+                        },
+                        color: '#666',
+                        padding: 10
                     }
                 }
             },
@@ -108,6 +299,17 @@ function initializeCharts() {
                     display: false
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    cornerRadius: 8,
+                    displayColors: false,
                     callbacks: {
                         label: function(context) {
                             return 'Monthly Profit: $' + context.parsed.y.toLocaleString();
@@ -216,6 +418,12 @@ function calculateMetrics(percentage, startingBankroll) {
     let totalWagered = 0;
     let totalReturned = 0;
     
+    // Track favorites vs underdogs
+    const oddsCategories = {
+        'Favorites': { wins: 0, total: 0, profit: 0, wagered: 0, returned: 0 },
+        'Underdogs': { wins: 0, total: 0, profit: 0, wagered: 0, returned: 0 }
+    };
+    
     // Process each day
     for (const date of seasonData.dates) {
         const games = seasonData.betting_data[date] || [];
@@ -239,6 +447,20 @@ function calculateMetrics(percentage, startingBankroll) {
                 if (game.bet_won) {
                     dailyWins++;
                     totalWins++;
+                }
+                
+                // Track by favorites vs underdogs
+                const americanOdds = decimalToAmericanOdds(game.payout);
+                const category = americanOdds < 100 ? 'Favorites' : 'Underdogs';
+                const profit = returnAmount - betAmount;
+                
+                oddsCategories[category].total++;
+                oddsCategories[category].wagered += betAmount;
+                oddsCategories[category].returned += returnAmount;
+                oddsCategories[category].profit += profit;
+                
+                if (game.bet_won) {
+                    oddsCategories[category].wins++;
                 }
             }
         }
@@ -300,7 +522,8 @@ function calculateMetrics(percentage, startingBankroll) {
         avgDailyProfit,
         dailyResults,
         monthlyData,
-        tradingDays: dailyResults.length
+        tradingDays: dailyResults.length,
+        oddsCategories
     };
 }
 
@@ -378,20 +601,81 @@ function updateCharts(metrics) {
     bankrollChart.data.datasets[0].data = bankrolls;
     bankrollChart.update('none');
     
-    // Daily profit chart (show last 30 days for readability)
-    const recentResults = metrics.dailyResults.slice(-30);
-    const dailyProfits = recentResults.map(d => d.dailyProfit);
-    const dailyColors = dailyProfits.map(profit => profit >= 0 ? '#4CAF50' : '#f44336');
+    // Favorites vs Underdogs comparison chart
+    const categories = ['Favorites', 'Underdogs'];
     
-    profitChart.data.labels = recentResults.map(d => d.date);
-    profitChart.data.datasets[0].data = dailyProfits;
-    profitChart.data.datasets[0].backgroundColor = dailyColors;
+    const categoryData = categories.map(cat => {
+        const data = metrics.oddsCategories[cat];
+        return {
+            winPercentage: data.total > 0 ? (data.wins / data.total) * 100 : 0,
+            profit: data.profit,
+            wins: data.wins,
+            total: data.total,
+            wagered: data.wagered,
+            returned: data.returned,
+            avgBetAmount: data.total > 0 ? data.wagered / data.total : 0,
+            avgProfit: data.total > 0 ? data.profit / data.total : 0
+        };
+    });
+    
+    const winPercentages = categoryData.map(d => d.winPercentage);
+    const profits = categoryData.map(d => d.profit);
+    
+    // Color for win rate bars - based on win percentage
+    const winRateColors = categoryData.map(data => {
+        if (data.winPercentage >= 55) {
+            return 'rgba(76, 175, 80, 0.85)';  // Green - good win rate
+        } else if (data.winPercentage >= 50) {
+            return 'rgba(255, 193, 7, 0.85)';  // Yellow - average
+        } else {
+            return 'rgba(244, 67, 54, 0.85)';  // Red - poor win rate
+        }
+    });
+    
+    // Color for profit bars - based on profitability
+    const profitColors = categoryData.map(data => {
+        if (data.profit > 0) {
+            return 'rgba(33, 150, 243, 0.85)';  // Blue - profitable
+        } else {
+            return 'rgba(255, 87, 34, 0.85)';  // Orange-red - losing
+        }
+    });
+    
+    // Store category data for tooltip
+    const storedCategoryData = categoryData;
+    
+    // Update tooltip callbacks with comprehensive comparison data
+    profitChart.options.plugins.tooltip.callbacks.afterBody = function(context) {
+        if (context.length > 0) {
+            const dataIndex = context[0].dataIndex;
+            const data = storedCategoryData[dataIndex];
+            
+            const avgProfitFormatted = data.avgProfit >= 0
+                ? '+$' + data.avgProfit.toFixed(2)
+                : '-$' + Math.abs(data.avgProfit).toFixed(2);
+            
+            return [
+                '',
+                `Record: ${data.wins}/${data.total}`,
+                `Avg per Bet: ${avgProfitFormatted}`,
+                `Total Wagered: $${data.wagered.toLocaleString(undefined, {maximumFractionDigits: 0})}`
+            ].join('\n');
+        }
+        return '';
+    };
+    
+    profitChart.data.labels = categories;
+    profitChart.data.datasets[0].data = winPercentages;
+    profitChart.data.datasets[0].backgroundColor = winRateColors;
+    profitChart.data.datasets[1].data = profits;
+    profitChart.data.datasets[1].backgroundColor = profitColors;
     profitChart.update('none');
     
     // Monthly chart
     const months = Object.keys(metrics.monthlyData).sort();
     const monthlyProfits = months.map(m => metrics.monthlyData[m].profit);
-    const monthlyColors = monthlyProfits.map(profit => profit >= 0 ? '#2196F3' : '#f44336');
+    const monthlyColors = monthlyProfits.map(profit => profit >= 0 ? 
+        'rgba(33, 150, 243, 0.85)' : 'rgba(244, 67, 54, 0.85)');
     
     monthlyChart.data.labels = months;
     monthlyChart.data.datasets[0].data = monthlyProfits;
